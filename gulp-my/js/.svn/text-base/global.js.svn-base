@@ -1,0 +1,25 @@
+var ShowCircle = function(msg){
+    //dialog circle
+    var m = dialog({
+        width: 50,
+        height: 50
+    });
+
+    m.addEventListener('close', function() {
+        // dialog to make sure
+        var t = dialog({
+            content: m.returnValue,
+            ok: function() {
+                location.reload();
+            }
+        });
+        t.show();
+    });
+    m.showModal();
+
+    return {
+        closeCircle: function(msg){
+            m.close(msg);
+        }
+    }
+}

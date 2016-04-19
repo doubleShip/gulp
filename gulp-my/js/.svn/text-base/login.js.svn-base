@@ -1,0 +1,71 @@
+/**
+ * Created by yvan on 15/12/7.
+ */
+window.onload = function () {
+    var id = document.getElementById("inputSth");
+    id.onfocus = function () {
+        id.style.color = "#404040";
+        if (id.value == "用户名") {
+            id.value = "";
+        }
+    };
+    id.onblur = function () {
+        if (id.value == "") {
+            id.style.color = "#b6b7b9";
+            id.value = "用户名";
+        }
+    }
+};
+
+var num=5;
+var $jumpBtn = "";
+var redirectUrl = "";
+var $submitBtn = "";
+
+$(function(){
+    $jumpBtn = $("#jumpBtn");
+    $submitBtn = $('#submitBtn');
+});
+
+function daoshu(){
+    if(num>0){
+        $jumpBtn.attr('href',redirectUrl);
+        document.getElementById("shu").innerHTML=num + "秒后页面自动跳转，若跳转失败请点击下面跳转按钮跳转.....";
+        setTimeout("daoshu()",1000);
+        num--;
+    }
+    else {
+        location.href=redirectUrl;
+    }
+}
+
+function submitDate() {
+    $submitBtn.attr('disabled',true);
+    $.ajax({
+        url: '/login',
+        type: 'post',
+        dataType: "json",
+        data:{
+            username: $('#inputSth').val(),
+            password: $('#pwd').val()
+        },
+
+        success: function(res){
+            if(window.console) { console.log(res) }
+            if(res.status) {
+                redirectUrl = decodeURIComponent(res.message);
+                document.getElementById('login').style.display='none';
+                document.getElementById('succ').style.display='block';
+                daoshu();
+            }
+            else {
+                alert(res.message);
+                $submitBtn.attr('disabled',false);
+            }
+        },
+
+        error: function(res){
+            if(window.console) { console.log(res);}
+        }
+    });
+}
