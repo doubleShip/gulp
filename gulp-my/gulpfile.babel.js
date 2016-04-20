@@ -63,7 +63,13 @@ gulp.task('html', function() {
 gulp.task('less', function () {
     gulp.src(lessSrc)
         .pipe($.less())
-        .pipe($.autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'))
+        .pipe($.autoprefixer({
+            browsers: ['last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'],
+            cascade: true, //是否美化属性值 默认：true 像这样：
+            //-webkit-transform: rotate(45deg);
+            //        transform: rotate(45deg);
+            remove: true //是否去掉不必要的前缀 默认：true
+        }))
         .pipe($.rename({ suffix: '.min' }))
         .pipe($.minifyCss())
         .pipe(gulp.dest(cssDst))
