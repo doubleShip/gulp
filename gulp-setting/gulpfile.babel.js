@@ -20,6 +20,17 @@ var cleanSrc = ['./dist/**'],
         '!./less/reset.less',
         '!./less/variables.less'
     ],
+    sassSrc = [
+        'sass/**/*.scss',
+        '!./sass/button.scss',
+        '!./sass/footer.scss',
+        '!./sass/header.scss',
+        '!./sass/icon.scss',
+        '!./sass/input.scss',
+        '!./sass/position.scss',
+        '!./sass/reset.scss',
+        '!./sass/variables.scss'
+    ],
     jsSrc = [
         'js/**/*.js'
     ],
@@ -71,6 +82,22 @@ gulp.task('html', function() {
 gulp.task('less', function () {
     gulp.src(lessSrc)
         .pipe($.less())
+        .pipe($.autoprefixer({
+            browsers: ['last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'],
+            cascade: true, //是否美化属性值 默认：true 像这样：
+            //-webkit-transform: rotate(45deg);
+            //        transform: rotate(45deg);
+            remove: true //是否去掉不必要的前缀 默认：true
+        }))
+        .pipe($.rename({ suffix: '.min' }))
+        .pipe($.minifyCss())
+        .pipe(gulp.dest(cssDst))
+});
+
+// 编译sass
+gulp.task('sass', function () {
+    gulp.src(sassSrc)
+        .pipe($.sass())
         .pipe($.autoprefixer({
             browsers: ['last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'],
             cascade: true, //是否美化属性值 默认：true 像这样：
@@ -147,6 +174,16 @@ gulp.task('watch', function() {
 
     //Watch .less files
     gulp.watch(['less/**/*.less'], ['less'])
+        .on('change', function(event) {
+            if(event.type == "deleted") {
+                deleteDistFile(event.path,function(e) {
+                    console.log(e)
+                });
+            }
+        });
+
+    //Watch .less files
+    gulp.watch(['sass/**/*.scss'], ['sass'])
         .on('change', function(event) {
             if(event.type == "deleted") {
                 deleteDistFile(event.path,function(e) {
