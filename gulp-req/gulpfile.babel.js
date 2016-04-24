@@ -9,8 +9,15 @@ var $ = gulpPlugins();
 var cleanSrc = ['./dist/**'],
     htmlSrc = ['*.html'],
     lessSrc = [
-        'less/main.less',
-        'less/page/*.less'
+        'less/**/*.less',
+        '!./less/button.less',
+        '!./less/footer.less',
+        '!./less/header.less',
+        '!./less/icon.less',
+        '!./less/input.less',
+        '!./less/position.less',
+        '!./less/reset.less',
+        '!./less/variables.less'
     ],
     jsSrc = [
         'js/**/*.js'
@@ -28,6 +35,7 @@ var cleanSrc = ['./dist/**'],
     imgSrc = ['images/*.{png,jpg,gif,ico}'],
     htmlDst = './dist/',
     jsDst = './dist/js',
+    jsSourceMap = '/maps',
     cssDst = './dist/css',
     imgDst = './dist/images';
 
@@ -74,6 +82,20 @@ gulp.task('less', function () {
         .pipe(gulp.dest(cssDst))
 });
 
+gulp.task('sprites', function() {
+    var spriteOutput;
+
+    spriteOutput = gulp.src("./dist/css/**/*.css")
+        .pipe($.spriteGenerator({
+            baseUrl:         "/dist/images/slice",
+            spriteSheetName: "sprite.png",
+            spriteSheetPath: "/dist/images"
+        }));
+
+    spriteOutput.css.pipe(gulp.dest("./dist/css"));
+    spriteOutput.img.pipe(gulp.dest("./dist/images"));
+});
+
 // 样式处理
 //gulp.task('css', function () {
 //    var cssSrc = './css/*.css',
@@ -91,8 +113,10 @@ gulp.task('js', function () {
     gulp.src(jsUgly)
         .pipe($.jshint('.jshintrc'))
         .pipe($.jshint.reporter('default'))
+        .pipe($.sourcemaps.init())    // 初始化sourcemaps
         .pipe($.rename({ suffix: '.min' }))
-        .pipe($.uglify())
+        .pipe($.uglify({}))
+        .pipe($.sourcemaps.write(jsSourceMap))
         .pipe(gulp.dest(jsDst));
 
     //拼接js
