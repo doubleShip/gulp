@@ -3,6 +3,7 @@ var gulp        = require('gulp'),
     del         = require('del'),
     pngquant    = require('imagemin-pngquant'),
     browserSync = require('browser-sync'),
+    spritesmith = require('gulp.spritesmith'),
     gulpPlugins = require('gulp-load-plugins');
 
 var $ = gulpPlugins();
@@ -82,31 +83,15 @@ gulp.task('less', function () {
         .pipe(gulp.dest(cssDst))
 });
 
-gulp.task('sprites', function() {
-    var spriteOutput;
-
-    spriteOutput = gulp.src("./dist/css/**/*.css")
-        .pipe($.spriteGenerator({
-            baseUrl:         "/dist/images/slice",
-            spriteSheetName: "sprite.png",
-            spriteSheetPath: "/dist/images"
-        }));
-
-    spriteOutput.css.pipe(gulp.dest("./dist/css"));
-    spriteOutput.img.pipe(gulp.dest("./dist/images"));
+gulp.task('sprite', function () {
+    var spriteData = gulp.src('images/slice/*.png').pipe(spritesmith({
+        imgName: 'sprite.png',
+        cssName: 'sprite.less'
+    }));
+    spriteData.img.pipe(gulp.dest('images/'));
+    spriteData.img.pipe(gulp.dest('dist/images/'));
+    spriteData.css.pipe(gulp.dest('less/'));
 });
-
-// 样式处理
-//gulp.task('css', function () {
-//    var cssSrc = './css/*.css',
-//        cssDst = './dist/css';
-//
-//    gulp.src(cssSrc)
-//        .pipe($.autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'))
-//        .pipe($.rename({ suffix: '.min' }))
-//        .pipe($.minifyCss())
-//        .pipe(gulp.dest(cssDst))
-//});
 
 // js处理
 gulp.task('js', function () {
