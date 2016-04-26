@@ -32,17 +32,24 @@ var cleanSrc = ['./dist/**'],
         '!./sass/variables.scss'
     ],
     jsSrc = [
-        'js/**/*.js'
+        'js/**/*.js',
+        'js/**/*.es6'
     ],
     jsConcat = [
         'js/config.js',
-        'js/base.js'
+        'js/base.js',
+        'js/config.es6',
+        'js/base.es6'
     ],
     jsUgly = [
         'js/**/*.js',
         '!./js/lib/*.js',
         '!./js/base.js',
-        '!./js/config.js'
+        '!./js/config.js',
+        'js/**/*.es6',
+        '!./js/lib/*.es6',
+        '!./js/base.es6',
+        '!./js/config.es6'
     ],
     imgSrc = ['images/*.{png,jpg,gif,ico}'],
     htmlDst = './dist/',
@@ -123,6 +130,7 @@ gulp.task('sprite', function () {
 // js处理
 gulp.task('js', function () {
     gulp.src(jsUgly)
+        .pipe($.babel({modules: 'common'})) //es6转es5
         .pipe($.jshint('.jshintrc'))
         .pipe($.jshint.reporter('default'))
         .pipe($.sourcemaps.init())    // 初始化sourcemaps
@@ -133,6 +141,7 @@ gulp.task('js', function () {
 
     //拼接js
     gulp.src(jsConcat)
+        .pipe($.babel({modules: 'common'})) //es6转es5
         .pipe($.concat('main.js'))
         .pipe($.rename({suffix: '.min'}))
         .pipe($.uglify())
