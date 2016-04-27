@@ -32,24 +32,17 @@ var cleanSrc = ['./dist/**'],
         '!./sass/variables.scss'
     ],
     jsSrc = [
-        'js/**/*.js',
-        'js/**/*.es6'
+        'js/**/*.{js,es6}'
     ],
     jsConcat = [
-        'js/config.js',
-        'js/base.js',
-        'js/config.es6',
-        'js/base.es6'
+        'js/config.{js,es6}',
+        'js/base.{js,es6}'
     ],
     jsUgly = [
-        'js/**/*.js',
-        '!./js/lib/*.js',
-        '!./js/base.js',
-        '!./js/config.js',
-        'js/**/*.es6',
-        '!./js/lib/*.es6',
-        '!./js/base.es6',
-        '!./js/config.es6'
+        'js/**/*.{js,es6}',
+        '!./js/lib/*.{js,es6}',
+        '!./js/base.{js,es6}',
+        '!./js/config.{js,es6}'
     ],
     imgSrc = ['images/*.{png,jpg,gif,ico}'],
     htmlDst = './dist/',
