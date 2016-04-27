@@ -3,6 +3,7 @@ var gulp        = require('gulp'),
     del         = require('del'),
     pngquant    = require('imagemin-pngquant'),
     browserSync = require('browser-sync'),
+    spritesmith = require('gulp.spritesmith'),
     gulpPlugins = require('gulp-load-plugins');
 
 var $ = gulpPlugins();
@@ -19,18 +20,29 @@ var cleanSrc = ['./dist/**'],
         '!./less/reset.less',
         '!./less/variables.less'
     ],
+    sassSrc = [
+        'sass/**/*.scss',
+        '!./sass/button.scss',
+        '!./sass/footer.scss',
+        '!./sass/header.scss',
+        '!./sass/icon.scss',
+        '!./sass/input.scss',
+        '!./sass/position.scss',
+        '!./sass/reset.scss',
+        '!./sass/variables.scss'
+    ],
     jsSrc = [
-        'js/**/*.js'
+        'js/**/*.{js,es6}'
     ],
     jsConcat = [
-        'js/config.js',
-        'js/base.js'
+        'js/config.{js,es6}',
+        'js/base.{js,es6}'
     ],
     jsUgly = [
-        'js/**/*.js',
-        '!./js/lib/*.js',
-        '!./js/base.js',
-        '!./js/config.js'
+        'js/**/*.{js,es6}',
+        '!./js/lib/*.{js,es6}',
+        '!./js/base.{js,es6}',
+        '!./js/config.{js,es6}'
     ],
     imgSrc = ['images/*.{png,jpg,gif,ico}'],
     htmlDst = './dist/',
@@ -82,35 +94,36 @@ gulp.task('less', function () {
         .pipe(gulp.dest(cssDst))
 });
 
-gulp.task('sprites', function() {
-    var spriteOutput;
-
-    spriteOutput = gulp.src("./dist/css/**/*.css")
-        .pipe($.spriteGenerator({
-            baseUrl:         "/dist/images/slice",
-            spriteSheetName: "sprite.png",
-            spriteSheetPath: "/dist/images"
-        }));
-
-    spriteOutput.css.pipe(gulp.dest("./dist/css"));
-    spriteOutput.img.pipe(gulp.dest("./dist/images"));
+// 编译sass
+gulp.task('sass', function () {
+    gulp.src(sassSrc)
+        .pipe($.sass())
+        .pipe($.autoprefixer({
+            browsers: ['last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'],
+            cascade: true, //是否美化属性值 默认：true 像这样：
+            //-webkit-transform: rotate(45deg);
+            //        transform: rotate(45deg);
+            remove: true //是否去掉不必要的前缀 默认：true
+        }))
+        .pipe($.rename({ suffix: '.min' }))
+        .pipe($.minifyCss())
+        .pipe(gulp.dest(cssDst))
 });
 
-// 样式处理
-//gulp.task('css', function () {
-//    var cssSrc = './css/*.css',
-//        cssDst = './dist/css';
-//
-//    gulp.src(cssSrc)
-//        .pipe($.autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'))
-//        .pipe($.rename({ suffix: '.min' }))
-//        .pipe($.minifyCss())
-//        .pipe(gulp.dest(cssDst))
-//});
+gulp.task('sprite', function () {
+    var spriteData = gulp.src('images/slice/*.png').pipe(spritesmith({
+        imgName: 'sprite.png',
+        cssName: 'sprite.less'
+    }));
+    spriteData.img.pipe(gulp.dest('images/'));
+    spriteData.img.pipe(gulp.dest('dist/images/'));
+    spriteData.css.pipe(gulp.dest('less/'));
+});
 
 // js处理
 gulp.task('js', function () {
     gulp.src(jsUgly)
+        .pipe($.babel({modules: 'common'})) //es6转es5
         .pipe($.jshint('.jshintrc'))
         .pipe($.jshint.reporter('default'))
         .pipe($.sourcemaps.init())    // 初始化sourcemaps
@@ -121,8 +134,9 @@ gulp.task('js', function () {
 
     //拼接js
     gulp.src(jsConcat)
-        .pipe($.concat('main.js'))
-        .pipe($.rename({suffix: '.min'}))
+        .pipe($.babel({modules: 'common'})) //es6转es5
+        .pipe($.concat('app.js'))
+        //.pipe($.rename({suffix: '.min'}))
         .pipe($.uglify())
         .pipe(gulp.dest('dist/js'));
 });
@@ -162,6 +176,16 @@ gulp.task('watch', function() {
 
     //Watch .less files
     gulp.watch(['less/**/*.less'], ['less'])
+        .on('change', function(event) {
+            if(event.type == "deleted") {
+                deleteDistFile(event.path,function(e) {
+                    console.log(e)
+                });
+            }
+        });
+
+    //Watch .less files
+    gulp.watch(['sass/**/*.scss'], ['sass'])
         .on('change', function(event) {
             if(event.type == "deleted") {
                 deleteDistFile(event.path,function(e) {

@@ -1,7 +1,6 @@
 /**
- * Created by yvan on 16/2/1.
+ * Created by yvan on 16/4/27.
  */
-
 /**
  * 动态加载css,js文件
  * @param srcs
@@ -45,17 +44,17 @@ var _loadCssJs = function(srcs,isAsync) {
 };
 
 var viewBook = function (bookId) {
-    console.log("viewBook: bookId is populated: " + bookId);
+	console.log("viewBook: bookId is populated: " + bookId);
 };
 
 // 路由配置
 var routes = {
-    '/': _loadCssJs([
+	'/': _loadCssJs([
 		'css/page/test.min.css',
-		'js/page/main.min.js'
+		'js/page/home.min.js'
 	]),
-    '/test.html': "",
-    '/books/view/:bookId': viewBook
+	'/test.html': "",
+	'/books/view/:bookId': viewBook
 };
 
 var router = Router(routes);
