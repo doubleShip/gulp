@@ -7,6 +7,8 @@ requirejs.config({
 		jquery: "lib/jquery",
 		util: "class/Util.min",
 		urlUtil: "class/Url.min",
+		router: "module/router.min",
+		loadCssJs: "module/loadCssJs.min",
 		eventUtil: 'module/eventUtil.min'
 	}
 });

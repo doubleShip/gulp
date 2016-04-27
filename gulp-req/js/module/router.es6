@@ -1,14 +1,3 @@
-/**
- * Created by yvan on 16/4/27.
- */
-
-
-
-//
-// Generated on Tue Dec 16 2014 12:13:47 GMT+0100 (CET) by Charlie Robbins, Paolo Fragomeni & the Contributors (Using Codesurgeon).
-// Version 1.2.6
-//
-
 (function (exports) {
 
 	/*
