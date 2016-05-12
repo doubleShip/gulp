@@ -2,7 +2,11 @@
  * Created by yvan on 16/4/27.
  */
 
-var EventUtil = {
+let EventUtil = {
+
+	test: function() {
+		console.log(111111);
+	},
 
 	addHandler: function(element, type, handler){
 		if (element.addEventListener){
@@ -168,3 +172,5 @@ function serialize(form){
 	}
 	return parts.join("&");
 }
+
+module.exports = EventUtil;
