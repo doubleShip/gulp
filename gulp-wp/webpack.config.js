@@ -1,8 +1,15 @@
 var path = require('path');
 var webpack = require('webpack');
 var fs= require("fs");
-var srcDir = './src/';
+var srcDir = './src/'; //资源路径
 
+/**
+ * 获取对应文件夹的文件list
+ * @param dir
+ * @param filelist
+ * @param finder
+ * @returns {*|Array}
+ */
 var walkSync = function(dir, filelist, finder) {
     var files = fs.readdirSync(dir);
     finder = finder || "",
@@ -27,6 +34,11 @@ var walkSync = function(dir, filelist, finder) {
     return filelist;
 };
 
+/**
+ * 生成entry数据
+ * @param finder
+ * @returns {{}}
+ */
 function getEntry(finder) {
     var jsPath = path.resolve(srcDir, finder) + "/",
         matchs = [],
@@ -47,7 +59,8 @@ module.exports = {
     entry: getEntry('js'),      //获取项目入口js文件
     output: {
         path: path.join(__dirname, "dist/js/"), //文件输出目录
-        publicPath: "/",     //用于配置文件发布路径，如CDN或本地服务器
+        publicPath: "/js/",     //用于配置文件发布路径，如CDN或本地服务器
+        chunkFilename: "[name].chunk.js",
         filename: "[name].js"      //根据入口文件输出的对应多个文件名
     },
     module: {
@@ -83,7 +96,7 @@ module.exports = {
     resolve: {
         //配置别名，在项目中可缩减引用路径
         alias: {
-            //jquery: srcDir + "/js/lib/jquery.min.js",
+            jquery: path.join(__dirname, "src/bower_components/jquery/dist/jquery.min.js")
             //core: srcDir + "/js/core",
             //ui: srcDir + "/js/ui"
         }
