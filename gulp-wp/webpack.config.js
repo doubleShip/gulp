@@ -11,14 +11,19 @@ var srcDir = './src/'; //资源路径
  * @returns {*|Array}
  */
 var walkSync = function(dir, filelist, finder) {
-    var files = fs.readdirSync(dir);
-    finder = finder || "",
-    filelist = filelist || [];
+    var files = fs.readdirSync(dir),
+        finder = finder || "",
+        filelist = filelist || [];
     files.forEach(function(file) {
         if (fs.statSync(dir + file).isDirectory()) {
+            var fartherFinder = file;
+            if(finder != "") {
+                fartherFinder = finder + "/" + file;
+            }
             // 去除不要遍历的文件夹
             if(file == 'page') {
-                filelist = walkSync(dir + file + '/', filelist, file);
+                //console.log(dir +"======="+ file)
+                filelist = walkSync(dir + file + '/', filelist, fartherFinder);
             }
         }
         else {
@@ -31,6 +36,7 @@ var walkSync = function(dir, filelist, finder) {
             }
         }
     });
+    //console.log(filelist)
     return filelist;
 };
 
@@ -46,7 +52,7 @@ function getEntry(finder) {
         dirs = walkSync(jsPath);
 
     dirs.forEach(function (item) {
-        matchs = item.match(/(.+)\.es6$/);
+        matchs = item.match(/(.+)\.(es6|js)$/);
         if (matchs) {
             files[matchs[1]] = path.resolve(srcDir, finder, item);
         }
